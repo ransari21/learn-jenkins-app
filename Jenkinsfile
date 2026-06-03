@@ -8,6 +8,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -40,15 +41,15 @@ pipeline {
 
         stage('Package Artifact') {
             steps {
-                sh 'zip -r $ZIP_FILE dist Dockerfile nginx.conf package.json package-lock.json src public index.html vite.config.js vitest.config.js'
-                archiveArtifacts artifacts: '$ZIP_FILE', fingerprint: true
+                sh 'zip -r deployment-package.zip dist Dockerfile nginx.conf package.json package-lock.json src index.html vite.config.js vitest.config.js'
+                archiveArtifacts artifacts: 'deployment-package.zip', fingerprint: true
             }
         }
 
         stage('Local Deployment Simulation') {
             steps {
                 echo 'Artifact packaged successfully.'
-                echo 'In a cloud setup, this artifact would be uploaded to S3 and deployed to AWS Elastic Beanstalk.'
+                echo 'In a production environment this artifact would be uploaded to AWS S3 and deployed via Elastic Beanstalk.'
             }
         }
     }
