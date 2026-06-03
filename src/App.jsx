@@ -1,8 +1,18 @@
+import { useEffect, useState } from 'react';
 import { Cloud, GitBranch, PackageCheck, ShieldCheck } from 'lucide-react';
 import StageCard from './components/StageCard.jsx';
 import { environmentStats, pipelineStages } from './data.js';
 
 export default function App() {
+  const [buildData, setBuildData] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/jenkins/latest-build')
+      .then((res) => res.json())
+      .then((data) => setBuildData(data))
+      .catch(console.error);
+  }, []);
+
   return (
     <main className="page">
       <section className="hero">
@@ -36,6 +46,22 @@ export default function App() {
           <p>{environmentStats.deploymentType}</p>
         </div>
       </section>
+
+      {buildData && (
+        <section className="section">
+          <div className="summary-card">
+            <h2>Latest Jenkins Build</h2>
+            <p><strong>Build:</strong> #{buildData.buildNumber}</p>
+            <p><strong>Status:</strong> {buildData.status}</p>
+            <p><strong>Duration:</strong> {(buildData.duration / 1000).toFixed(2)}s</p>
+            <p><strong>Artifact:</strong> {buildData.artifact}</p>
+
+            <a href={buildData.url} target="_blank" rel="noreferrer">
+              Open Jenkins Build →
+            </a>
+          </div>
+        </section>
+      )}
 
       <section className="stats-grid" aria-label="Project highlights">
         <div>
