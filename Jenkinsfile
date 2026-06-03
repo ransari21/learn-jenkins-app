@@ -4,15 +4,7 @@ pipeline {
     environment {
         APP_NAME = 'learn-jenkins-app'
         DOCKER_IMAGE = 'learn-jenkins-app'
-        AWS_REGION = 'us-west-1'
-        S3_BUCKET = 'ci-cd-project-storage'
-        EB_APP_NAME = 'learn-jenkins-app'
-        EB_ENV_NAME = 'learn-jenkins-app-prod'
         ZIP_FILE = 'deployment-package.zip'
-    }
-
-    triggers {
-        githubPush()
     }
 
     stages {
@@ -42,41 +34,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .'
+                echo 'Docker build skipped because local Jenkins container is not connected to Docker daemon.'
             }
         }
 
         stage('Package Artifact') {
             steps {
-                sh 'zip -r $ZIP_FILE Dockerfile nginx.conf package.json src public index.html vite.config.js vitest.config.js || true'
+                sh 'zip -r $ZIP_FILE dist Dockerfile nginx.conf package.json package-lock.json src public index.html vite.config.js vitest.config.js'
                 archiveArtifacts artifacts: '$ZIP_FILE', fingerprint: true
             }
         }
 
-        stage('Upload Artifact to S3') {
+        stage('Local Deployment Simulation') {
             steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-jenkins-credentials'
-                ]]) {
-                    sh 'aws s3 cp $ZIP_FILE s3://$S3_BUCKET/$APP_NAME/$BUILD_NUMBER/$ZIP_FILE --region $AWS_REGION'
-                }
-            }
-        }
-
-        stage('Deploy to Elastic Beanstalk') {
-            steps {
-                input message: 'Deploy this build to production?', ok: 'Deploy'
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-jenkins-credentials'
-                ]]) {
-                    sh '''
-                    aws elasticbeanstalk create-application-version                       --application-name $EB_APP_NAME                       --version-label build-$BUILD_NUMBER                       --source-bundle S3Bucket=$S3_BUCKET,S3Key=$APP_NAME/$BUILD_NUMBER/$ZIP_FILE                       --region $AWS_REGION
-
-                    aws elasticbeanstalk update-environment                       --environment-name $EB_ENV_NAME                       --version-label build-$BUILD_NUMBER                       --region $AWS_REGION
-                    '''
-                }
+                echo 'Artifact packaged successfully.'
+                echo 'In a cloud setup, this artifact would be uploaded to S3 and deployed to AWS Elastic Beanstalk.'
             }
         }
     }
