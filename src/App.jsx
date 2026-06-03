@@ -13,9 +13,19 @@ export default function App() {
             A DevOps project that automates build, test, containerization, artifact storage,
             and deployment workflows for a React application using Jenkins and AWS.
           </p>
+
           <div className="hero-actions">
-            <a href="#pipeline">View Pipeline</a>
-            <a href="#architecture" className="secondary">Architecture</a>
+            <a
+              href="http://localhost:8081/job/learn-jenkins-app/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View Jenkins Pipeline
+            </a>
+
+            <a href="#architecture" className="secondary">
+              Architecture
+            </a>
           </div>
         </div>
 
@@ -63,18 +73,18 @@ export default function App() {
           <p className="eyebrow">Architecture</p>
           <h2>How the Deployment Works</h2>
           <p>
-            Developers push code to GitHub. A webhook triggers Jenkins, which installs
-            dependencies, runs tests, builds the React app, creates a Docker image, stores
-            artifacts in S3, and deploys the containerized application to AWS Elastic Beanstalk.
+            Developers push code to GitHub. Jenkins checks out the repository,
+            installs dependencies, runs tests, builds the React app, packages the
+            deployment artifact, and archives the artifact for release.
           </p>
         </div>
 
         <ol className="architecture-list">
-          <li>GitHub webhook sends push event to Jenkins.</li>
-          <li>Jenkins runs checkout, install, test, and build stages.</li>
-          <li>Docker image packages the app for consistent environments.</li>
-          <li>Build artifacts are archived and uploaded to S3.</li>
-          <li>Elastic Beanstalk deploys the application to staging or production.</li>
+          <li>GitHub stores the source code and Jenkinsfile.</li>
+          <li>Jenkins pulls the latest code from the main branch.</li>
+          <li>Jenkins installs dependencies and runs automated tests.</li>
+          <li>The React app is built into production-ready files.</li>
+          <li>The deployment package is archived as a Jenkins build artifact.</li>
         </ol>
       </section>
     </main>
