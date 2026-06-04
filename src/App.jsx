@@ -6,11 +6,15 @@ import { environmentStats, pipelineStages } from './data.js';
 export default function App() {
   const [buildData, setBuildData] = useState(null);
 
-  useEffect(() => {
+  const fetchBuildData = () => {
     fetch('http://localhost:3001/api/jenkins/latest-build')
       .then((res) => res.json())
       .then((data) => setBuildData(data))
       .catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchBuildData();
   }, []);
 
   return (
@@ -18,10 +22,13 @@ export default function App() {
       <section className="hero">
         <div>
           <p className="eyebrow">Jenkins • Docker • GitHub • AWS</p>
+
           <h1>CI/CD Pipeline Automation Dashboard</h1>
+
           <p className="hero-copy">
-            A DevOps project that automates build, test, containerization, artifact storage,
-            and deployment workflows for a React application using Jenkins and AWS.
+            A DevOps project that automates build, test, containerization,
+            artifact storage, and deployment workflows for a React application
+            using Jenkins and AWS.
           </p>
 
           <div className="hero-actions">
@@ -51,12 +58,42 @@ export default function App() {
         <section className="section">
           <div className="summary-card">
             <h2>Latest Jenkins Build</h2>
-            <p><strong>Build:</strong> #{buildData.buildNumber}</p>
-            <p><strong>Status:</strong> {buildData.status}</p>
-            <p><strong>Duration:</strong> {(buildData.duration / 1000).toFixed(2)}s</p>
-            <p><strong>Artifact:</strong> {buildData.artifact}</p>
 
-            <a href={buildData.url} target="_blank" rel="noreferrer">
+            <button
+              onClick={fetchBuildData}
+              style={{
+                marginBottom: '1rem',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              Refresh Build Status
+            </button>
+
+            <p>
+              <strong>Build:</strong> #{buildData.buildNumber}
+            </p>
+
+            <p>
+              <strong>Status:</strong> {buildData.status}
+            </p>
+
+            <p>
+              <strong>Duration:</strong>{' '}
+              {(buildData.duration / 1000).toFixed(2)}s
+            </p>
+
+            <p>
+              <strong>Artifact:</strong> {buildData.artifact}
+            </p>
+
+            <a
+              href={buildData.url}
+              target="_blank"
+              rel="noreferrer"
+            >
               Open Jenkins Build →
             </a>
           </div>
@@ -69,11 +106,13 @@ export default function App() {
           <h3>GitHub Trigger</h3>
           <p>Push events start Jenkins builds automatically.</p>
         </div>
+
         <div>
           <PackageCheck />
           <h3>Build Artifacts</h3>
           <p>Production files are packaged and stored for deployment.</p>
         </div>
+
         <div>
           <ShieldCheck />
           <h3>Secure Secrets</h3>
@@ -97,11 +136,13 @@ export default function App() {
       <section id="architecture" className="section architecture">
         <div>
           <p className="eyebrow">Architecture</p>
+
           <h2>How the Deployment Works</h2>
+
           <p>
             Developers push code to GitHub. Jenkins checks out the repository,
-            installs dependencies, runs tests, builds the React app, packages the
-            deployment artifact, and archives the artifact for release.
+            installs dependencies, runs tests, builds the React app, packages
+            the deployment artifact, and archives the artifact for release.
           </p>
         </div>
 
