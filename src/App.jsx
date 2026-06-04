@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Cloud, GitBranch, PackageCheck, ShieldCheck } from 'lucide-react';
+import { Cloud, GitBranch, PackageCheck, ShieldCheck, X } from 'lucide-react';
 import StageCard from './components/StageCard.jsx';
 import { environmentStats, pipelineStages } from './data.js';
 
 export default function App() {
   const [buildData, setBuildData] = useState(null);
+  const [showArchitecture, setShowArchitecture] = useState(false);
 
   const fetchBuildData = () => {
     fetch('http://localhost:3001/api/jenkins/latest-build')
@@ -22,7 +23,6 @@ export default function App() {
       <section className="hero">
         <div>
           <p className="eyebrow">Jenkins • Docker • GitHub • AWS</p>
-
           <h1>CI/CD Pipeline Automation Dashboard</h1>
 
           <p className="hero-copy">
@@ -40,9 +40,16 @@ export default function App() {
               View Jenkins Pipeline
             </a>
 
-            <a href="#architecture" className="secondary">
+            <button
+              onClick={() => setShowArchitecture(true)}
+              className="secondary"
+              style={{
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
               Architecture
-            </a>
+            </button>
           </div>
         </div>
 
@@ -53,6 +60,82 @@ export default function App() {
           <p>{environmentStats.deploymentType}</p>
         </div>
       </section>
+
+      {showArchitecture && (
+        <div
+          onClick={() => setShowArchitecture(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.72)',
+            display: 'grid',
+            placeItems: 'center',
+            zIndex: 1000,
+            padding: '24px'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 'min(720px, 100%)',
+              background: '#0f172a',
+              color: 'white',
+              borderRadius: '24px',
+              padding: '28px',
+              boxShadow: '0 25px 80px rgba(0,0,0,0.35)'
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px'
+              }}
+            >
+              <h2>Architecture Diagram</h2>
+
+              <button
+                onClick={() => setShowArchitecture(false)}
+                style={{
+                  background: 'transparent',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <pre
+              style={{
+                background: '#111827',
+                padding: '24px',
+                borderRadius: '18px',
+                overflowX: 'auto',
+                lineHeight: '1.7'
+              }}
+            >
+{`GitHub Repository
+       ↓
+Jenkins Pipeline
+       ↓
+Install Dependencies
+       ↓
+Run Automated Tests
+       ↓
+Build React Application
+       ↓
+Package Artifact
+       ↓
+Archive Deployment ZIP
+       ↓
+Future AWS Deployment`}
+            </pre>
+          </div>
+        </div>
+      )}
 
       {buildData && (
         <section className="section">
@@ -72,28 +155,12 @@ export default function App() {
               Refresh Build Status
             </button>
 
-            <p>
-              <strong>Build:</strong> #{buildData.buildNumber}
-            </p>
+            <p><strong>Build:</strong> #{buildData.buildNumber}</p>
+            <p><strong>Status:</strong> {buildData.status}</p>
+            <p><strong>Duration:</strong> {(buildData.duration / 1000).toFixed(2)}s</p>
+            <p><strong>Artifact:</strong> {buildData.artifact}</p>
 
-            <p>
-              <strong>Status:</strong> {buildData.status}
-            </p>
-
-            <p>
-              <strong>Duration:</strong>{' '}
-              {(buildData.duration / 1000).toFixed(2)}s
-            </p>
-
-            <p>
-              <strong>Artifact:</strong> {buildData.artifact}
-            </p>
-
-            <a
-              href={buildData.url}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href={buildData.url} target="_blank" rel="noreferrer">
               Open Jenkins Build →
             </a>
           </div>
@@ -136,7 +203,6 @@ export default function App() {
       <section id="architecture" className="section architecture">
         <div>
           <p className="eyebrow">Architecture</p>
-
           <h2>How the Deployment Works</h2>
 
           <p>
