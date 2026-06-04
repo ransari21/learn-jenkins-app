@@ -225,7 +225,7 @@ Create a Jenkins API token and store it securely.
 Payload URL:
 
 ```text
-https://YOUR-NGROK-URL/github-webhook/
+https://unafraid-stowing-unwilling.ngrok-free.dev/github-webhook/
 ```
 
 Content Type:
