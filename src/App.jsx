@@ -23,7 +23,7 @@ export default function App() {
       <section className="hero">
         <div>
           <p className="eyebrow">Jenkins • Docker • GitHub • AWS</p>
-          <h1>CI/CD Pipeline Automation Dashboard</h1>
+          <h1>CI/CD Pipeline Automation</h1>
 
           <p className="hero-copy">
             A DevOps project that automates build, test, containerization,
